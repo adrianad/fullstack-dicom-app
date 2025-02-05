@@ -21,11 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'idSeries'
       }
     },
-    FilePath: {
+    filePath: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    CreatedDate: {
+    createdDate: {
       type: DataTypes.DATE,
       allowNull: false
     }

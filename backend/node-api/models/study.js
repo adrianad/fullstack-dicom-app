@@ -22,11 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'idPatient'
       }
     },
-    Name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    CreatedDate: {
+    createdDate: {
       type: DataTypes.DATE,
       allowNull: false
     }

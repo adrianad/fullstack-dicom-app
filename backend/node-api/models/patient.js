@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    Name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    CreatedDate: {
+    createdDate: {
       type: DataTypes.DATE,
       allowNull: false
     }

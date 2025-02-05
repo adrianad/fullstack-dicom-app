@@ -31,11 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'idModality'
       }
     },
-    Name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    CreatedDate: {
+    createdDate: {
       type: DataTypes.DATE,
       allowNull: false
     }

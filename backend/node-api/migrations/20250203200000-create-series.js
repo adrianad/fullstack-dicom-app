@@ -17,10 +17,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: 'Modalities', key: 'idModality' }
       },
-      Name: {
+      name: {
         type: Sequelize.STRING
       },
-      CreatedDate: {
+      createdDate: {
         type: Sequelize.DATE
       },
       createdAt: {

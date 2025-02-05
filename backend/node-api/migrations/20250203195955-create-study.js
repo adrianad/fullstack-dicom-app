@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: 'Patients', key: 'idPatient' }
       },
-      Name: {
+      name: {
         type: Sequelize.STRING
       },
-      CreatedDate: {
+      createdDate: {
         type: Sequelize.DATE
       },
       createdAt: {
