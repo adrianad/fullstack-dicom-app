@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'idModality'
       }
     },
-    SeriesName: {
+    Name: {
       type: DataTypes.STRING,
       allowNull: false
     },

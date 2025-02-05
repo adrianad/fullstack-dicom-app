@@ -1,4 +1,4 @@
-const { File, Series } = require("../models");
+const { File, Series } = require("../../models");
 
 const fileResolvers = {
     Query: {

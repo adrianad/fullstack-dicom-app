@@ -1,10 +1,8 @@
-const { gql } = require("apollo-server");
-
-const studyType = gql`
+const studyType = `
   type Study {
     idStudy: ID!
     idPatient: ID!
-    studyName: String!
+    name: String!
     createdAt: String!
     updatedAt: String!
     patient: Patient # Relationship with Patient

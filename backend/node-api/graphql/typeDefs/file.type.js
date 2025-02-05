@@ -1,6 +1,4 @@
-const { gql } = require("apollo-server");
-
-const fileType = gql`
+const fileType = `
   type File {
     idFile: ID!
     idSeries: ID!

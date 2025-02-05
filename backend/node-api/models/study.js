@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         key: 'idPatient'
       }
     },
-    StudyName: {
+    Name: {
       type: DataTypes.STRING,
       allowNull: false
     },

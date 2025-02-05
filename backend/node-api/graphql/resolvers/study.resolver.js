@@ -1,4 +1,4 @@
-const { Study, Patient, Series } = require("../models");
+const { Study, Patient, Series } = require("../../models");
 
 const studyResolvers = {
     Query: {

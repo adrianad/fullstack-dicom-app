@@ -1,6 +1,4 @@
-const { gql } = require("apollo-server");
-
-const modalityType = gql`
+const modalityType = `
   type Modality {
     idModality: ID!
     name: String!

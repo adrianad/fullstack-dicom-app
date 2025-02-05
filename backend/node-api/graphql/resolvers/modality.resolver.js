@@ -1,4 +1,4 @@
-const { Modality, Series } = require("../models");
+const { Modality, Series } = require("../../models");
 
 const modalityResolvers = {
     Query: {
