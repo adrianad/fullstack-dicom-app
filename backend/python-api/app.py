@@ -2,6 +2,7 @@ import numpy as np
 import uuid
 import os
 import pydicom
+import requests
 
 from datetime import datetime
 from PIL import Image
@@ -16,6 +17,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+graphql_url = "http://localhost:4000"
 
 def get_unique_filename(filename):
     """Generates a unique filename using timestamp + UUID."""
@@ -37,19 +39,25 @@ def get_dicom_value(ds, name):
         return value.tolist()  # Convert NumPy arrays to lists
     if isinstance(value, (np.floating, np.integer)):
         return value.item()  # Convert NumPy scalar to native Python type
+
     return value
 
 def get_dicom_metadata(filepath):
     ds = dcmread(filepath)
+
+    SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
+    StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
         
     metadata = {
         "PatientName": get_dicom_value(ds, 'PatientName'),
         "PatientBirthDate": get_dicom_value(ds, 'PatientBirthDate'),
         "Modality": get_dicom_value(ds, 'Modality'),
-        "StudyDate": get_dicom_value(ds, 'StudyDate'),
+        "StudyInstanceUID": get_dicom_value(ds, 'StudyInstanceUID'),
+        "StudyDate": StudyDate,
         "StudyTime": get_dicom_value(ds, 'StudyTime'),
         "StudyDescription": get_dicom_value(ds, 'StudyDescription'),
-        "SeriesDate": get_dicom_value(ds, 'SeriesDate'),
+        "SeriesInstanceUID": get_dicom_value(ds, 'SeriesInstanceUID'),
+        "SeriesDate": SeriesDate,
         "SeriesTime": get_dicom_value(ds, 'SeriesTime'),
         "SeriesDescription": get_dicom_value(ds, 'SeriesDescription')
     }
@@ -86,6 +94,60 @@ def upload_dicom():
             "dicom_path": os.path.abspath(dicom_path),
             **metadata
         })
+
+        # Define the GraphQL mutation query with a variable placeholder
+        query = """
+        mutation CreateFullRecord($input: CreateFullRecordInput!) {
+            createFullRecord(input: $input) {
+                idFile
+            }
+        }
+        """
+
+        # Define the variables as a Python dictionary
+        variables = {
+            "input": {
+                "file": {
+                    "filePath": results[-1]['dicom_path']
+                },
+                "modality": {
+                    "name": results[-1]['Modality']
+                },
+                "series": {
+                    "idSeries": results[-1]['SeriesInstanceUID'],
+                    "name": results[-1]['StudyDescription'],
+                    "date": results[-1]['SeriesDate'],
+                    "study": {
+                        "patient": {
+                            "name": results[-1]['PatientName'],
+                            "birthdate": results[-1]['PatientBirthDate']
+                        },
+                        "idStudy": results[-1]['StudyInstanceUID'],
+                        "name": results[-1]['StudyDescription'],
+                        "date": results[-1]['StudyDate']
+                    }
+                }
+            }
+        }
+
+        
+        # Create the payload that includes both the query and variables
+        payload = {
+            "query": query,
+            "variables": variables
+        }
+
+        # Send the POST request
+        response = requests.post(graphql_url, json=payload)
+
+
+        print("response status code: ", response.status_code) 
+        if response.status_code == 200: 
+            print("response : ", response.content) 
+
+        print(metadata)
+
+        print(response.text)
 
     return jsonify(results), 200
 
