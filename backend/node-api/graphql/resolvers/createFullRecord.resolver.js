@@ -70,7 +70,7 @@ createFullRecordResolvers = {
                 return result;
             } catch (error) {
                 console.error('Error in createFullRecord mutation:', error);
-                throw new Error('Failed to create full record');
+                throw new Error(error);
             }
         }
 

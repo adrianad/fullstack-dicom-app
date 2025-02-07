@@ -15,7 +15,6 @@ const fullRecordTypeDefs = `
 
   input CreateSeriesInput {
     idSeries: String!    # Provide an id or generate one in the resolver
-    idModality: ID!      # This can be provided or created via modality input
     name: String!
     date: String!
     study: CreateStudyInput!
