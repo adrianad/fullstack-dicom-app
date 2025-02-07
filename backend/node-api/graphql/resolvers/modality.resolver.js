@@ -11,7 +11,11 @@ const modalityResolvers = {
     },
     Mutation: {
         createModality: async (_, { name }) => {
-            return await Modality.create({ name });
+            const [modality, created] = await Modality.findOrCreate({
+                where: { name },
+                defaults: { name }
+            });
+            return modality;
         }
     },
     Modality: {

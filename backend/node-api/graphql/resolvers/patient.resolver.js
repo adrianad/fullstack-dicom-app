@@ -10,8 +10,12 @@ const patientResolvers = {
         }
     },
     Mutation: {
-        createPatient: async (_, { name }) => {
-            return await Patient.create({ name });
+        createPatient: async (_, { name, birthdate }) => {
+            const [patient, created] = await Patient.findOrCreate({
+                where: { name },
+                defaults: { name, birthdate }
+            });
+            return patient;
         }
     },
     Patient: {

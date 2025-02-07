@@ -10,8 +10,12 @@ const seriesResolvers = {
         }
     },
     Mutation: {
-        createSeries: async (_, { idStudy, idModality, seriesName }) => {
-            return await Series.create({ idStudy, idModality, seriesName });
+        createSeries: async (_, { idSeries, idStudy, idModality, name, date }) => {
+            const [series, created] = await Series.findOrCreate({
+                where: { idSeries },
+                defaults: { idSeries, idStudy, idModality, name, date }
+            });
+            return series;
         }
     },
     Series: {

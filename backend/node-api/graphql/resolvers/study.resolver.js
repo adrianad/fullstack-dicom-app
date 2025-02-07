@@ -10,8 +10,12 @@ const studyResolvers = {
         }
     },
     Mutation: {
-        createStudy: async (_, { idPatient, studyName }) => {
-            return await Study.create({ idPatient, studyName });
+        createStudy: async (_, { idStudy, idPatient, name, date }) => {
+            const [study, created] = await Study.findOrCreate({
+                where: { idStudy },
+                defaults: { idStudy, idPatient, name, date }
+            });
+            return study;
         }
     },
     Study: {
