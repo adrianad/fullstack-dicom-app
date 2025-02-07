@@ -1,10 +1,8 @@
 const fileType = `
   type File {
     idFile: ID!
-    idSeries: ID!
+    idSeries: String!
     filePath: String!
-    createdAt: String!
-    updatedAt: String!
     series: Series # Relationship with Series
   }
 

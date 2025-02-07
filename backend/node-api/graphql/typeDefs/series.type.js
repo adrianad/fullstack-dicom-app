@@ -1,11 +1,10 @@
 const seriesType = `
   type Series {
-    idSeries: ID!
-    idStudy: ID!
+    idSeries: String!
+    idStudy: String!
     idModality: ID!
     name: String!
-    createdAt: String!
-    updatedAt: String!
+    date: String!
     study: Study # Relationship with Study
     modality: Modality # Relationship with Modality
     files: [File] # Relationship with File
@@ -17,7 +16,7 @@ const seriesType = `
   }
 
   type Mutation {
-    createSeries(idStudy: ID!, idModality: ID!, seriesName: String!): Series
+    createSeries(idSeries: String!, idStudy: String!, idModality: ID!, name: String!, date: String!): Series
   }
 `;
 

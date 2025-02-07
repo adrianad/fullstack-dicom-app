@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     idSeries: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: 'Series',
@@ -23,10 +23,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     filePath: {
       type: DataTypes.STRING,
-      allowNull: false
-    },
-    createdDate: {
-      type: DataTypes.DATE,
       allowNull: false
     }
   }, {

@@ -1,10 +1,9 @@
 const studyType = `
   type Study {
-    idStudy: ID!
+    idStudy: String!
     idPatient: ID!
     name: String!
-    createdAt: String!
-    updatedAt: String!
+    date: String!
     patient: Patient # Relationship with Patient
     series: [Series] # Relationship with Series
   }
@@ -15,7 +14,7 @@ const studyType = `
   }
 
   type Mutation {
-    createStudy(idPatient: ID!, studyName: String!): Study
+    createStudy(idStudy: String!, idPatient: ID!, name: String!, date: String!): Study
   }
 `;
 

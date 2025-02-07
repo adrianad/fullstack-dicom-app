@@ -2,6 +2,7 @@ const patientType = `
   type Patient {
     idPatient: ID!
     name: String!
+    birthdate: String!
     createdAt: String!
     updatedAt: String!
     studies: [Study] # Relationship with Study
@@ -13,7 +14,7 @@ const patientType = `
   }
 
   type Mutation {
-    createPatient(name: String!): Patient
+    createPatient(name: String!, birthdate: String!): Patient
   }
 `;
 

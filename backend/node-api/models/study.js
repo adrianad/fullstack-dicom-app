@@ -10,9 +10,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Study.init({
     idStudy: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+      type: DataTypes.STRING,
+      primaryKey: true
     },
     idPatient: {
       type: DataTypes.INTEGER,
@@ -26,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    createdDate: {
+    date: {
       type: DataTypes.DATE,
       allowNull: false
     }

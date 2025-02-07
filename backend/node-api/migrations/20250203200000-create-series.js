@@ -5,22 +5,25 @@ module.exports = {
     await queryInterface.createTable('Series', {
       idSeries: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       idStudy: {
-        type: Sequelize.INTEGER,
+        allowNull: false,
+        type: Sequelize.STRING,
         references: { model: 'Studies', key: 'idStudy' }
       },
       idModality: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: { model: 'Modalities', key: 'idModality' }
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      createdDate: {
+      date: {
+        allowNull: false,
         type: Sequelize.DATE
       },
       createdAt: {

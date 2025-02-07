@@ -5,18 +5,20 @@ module.exports = {
     await queryInterface.createTable('Studies', {
       idStudy: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       idPatient: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: { model: 'Patients', key: 'idPatient' }
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      createdDate: {
+      date: {
+        allowNull: false,
         type: Sequelize.DATE
       },
       createdAt: {

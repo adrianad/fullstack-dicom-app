@@ -10,14 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       idSeries: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         references: { model: 'Series', key: 'idSeries' }
       },
       filePath: {
         type: Sequelize.STRING
-      },
-      createdDate: {
-        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,

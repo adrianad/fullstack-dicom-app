@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Series.init({
     idSeries: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
-      autoIncrement: true
+      allowNull: false
     },
     idStudy: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: 'Studies',
@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    createdDate: {
+    date: {
       type: DataTypes.DATE,
       allowNull: false
     }
