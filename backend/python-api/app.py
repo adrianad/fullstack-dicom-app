@@ -5,19 +5,18 @@ import pydicom
 import requests
 
 from datetime import datetime
-from PIL import Image
-from numpy import maximum, ndarray
-from pydicom import dcmread, FileDataset
+from pydicom.errors import InvalidDicomError
 from pydicom.multival import MultiValue
 from pydicom.valuerep import PersonName
-from flask import Flask, request, send_file, jsonify, url_for
-from PIL import Image
+from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app) 
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-graphql_url = "http://localhost:4000"
+graphql_url = "http://node-api:4000"
 
 def get_unique_filename(filename):
     """Generates a unique filename using timestamp + UUID."""
@@ -42,8 +41,7 @@ def get_dicom_value(ds, name):
 
     return value
 
-def get_dicom_metadata(filepath):
-    ds = dcmread(filepath)
+def get_dicom_metadata(ds):
 
     SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
     StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
@@ -80,6 +78,12 @@ def upload_dicom():
         if file.filename == "":
             continue
 
+        try:
+            # Try to read the file as a DICOM file
+            dicom = pydicom.dcmread(file)
+        except InvalidDicomError:
+            return jsonify({"error": f"File {file.filename} is not a valid DICOM file"}), 400
+
         unique_filename = get_unique_filename(file.filename)
 
         # Save uploaded DICOM
@@ -87,7 +91,7 @@ def upload_dicom():
         file.save(dicom_path)
 
         # Get Metadata
-        metadata = get_dicom_metadata(dicom_path)
+        metadata = get_dicom_metadata(dicom)
 
         results.append({
             "filename": unique_filename,
