@@ -5,19 +5,18 @@ import pydicom
 import requests
 
 from datetime import datetime
-from PIL import Image
-from numpy import maximum, ndarray
-from pydicom import dcmread, FileDataset
+from pydicom.errors import InvalidDicomError
 from pydicom.multival import MultiValue
 from pydicom.valuerep import PersonName
-from flask import Flask, request, send_file, jsonify, url_for
-from PIL import Image
+from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app) 
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-graphql_url = "http://localhost:4000"
+graphql_url = "http://node-api:4000"
 
 def get_unique_filename(filename):
     """Generates a unique filename using timestamp + UUID."""
@@ -42,8 +41,7 @@ def get_dicom_value(ds, name):
 
     return value
 
-def get_dicom_metadata(filepath):
-    ds = dcmread(filepath)
+def get_dicom_metadata(ds):
 
     SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
     StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
@@ -86,8 +84,15 @@ def upload_dicom():
         dicom_path = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(dicom_path)
 
+        try:
+            # Try to read the file as a DICOM file from the saved path
+            dicom = pydicom.dcmread(dicom_path)
+        except InvalidDicomError:
+            os.remove(dicom_path)
+            return jsonify({"error": f"File {file.filename} is not a valid DICOM file"}), 400
+
         # Get Metadata
-        metadata = get_dicom_metadata(dicom_path)
+        metadata = get_dicom_metadata(dicom)
 
         results.append({
             "filename": unique_filename,
@@ -108,14 +113,14 @@ def upload_dicom():
         variables = {
             "input": {
                 "file": {
-                    "filePath": results[-1]['dicom_path']
+                    "filePath": results[-1]['filename']
                 },
                 "modality": {
                     "name": results[-1]['Modality']
                 },
                 "series": {
                     "idSeries": results[-1]['SeriesInstanceUID'],
-                    "name": results[-1]['StudyDescription'],
+                    "name": results[-1]['SeriesDescription'],
                     "date": results[-1]['SeriesDate'],
                     "study": {
                         "patient": {
@@ -152,13 +157,13 @@ def upload_dicom():
     return jsonify(results), 200
 
 
-@app.route("/preview/<filename>", methods=["GET"])
+@app.route("/download/<filename>", methods=["GET"])
 def get_preview(filename):
-    """Serves a previously generated PNG preview."""
-    png_path = os.path.join(PREVIEW_FOLDER, filename)
-    if not os.path.exists(png_path):
+    """Serves a Dicom File."""
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    if not os.path.exists(filepath):
         return jsonify({"error": "File not found"}), 404
-    return send_file(png_path, mimetype="image/png")
+    return send_file(filepath, as_attachment=True, mimetype='application/dicom')
 
 
 if __name__ == "__main__":

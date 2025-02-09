@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
+import DicomFileDropzone from './components/DicomFileDropzone';
+import DicomViewer from './components/DicomViewer';
+import DataDisplay from './components/DataDisplay';
+import { Tabs, Tab, Box } from '@mui/material';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [updateDataDisplay, setUpdateDataDisplay] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+
+  const handleUploadSuccess = () => {
+    console.log('Upload successful');
+    setUpdateDataDisplay((prev) => !prev); // Toggle the state to trigger rerender
+  };
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setSelectedTab(newValue);
+  };
+
+  const handleViewImage = (imageId: string) => {
+    setSelectedImageId(imageId);
+    setSelectedTab(1); // Switch to the DicomViewer tab
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Tabs value={selectedTab} onChange={handleTabChange}>
+        <Tab label="Upload DICOM Files" />
+        <Tab label="View DICOM Files" />
+      </Tabs>
+      <Box p={3} style={{ height: '400px', overflow: 'auto' }}>
+        {selectedTab === 0 && <DicomFileDropzone onUploadSuccess={handleUploadSuccess} />}
+        {selectedTab === 1 && selectedImageId && <DicomViewer imageId={selectedImageId} />}
+      </Box>
+      <DataDisplay updateTrigger={updateDataDisplay} onViewImage={handleViewImage} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
