@@ -78,17 +78,18 @@ def upload_dicom():
         if file.filename == "":
             continue
 
-        try:
-            # Try to read the file as a DICOM file
-            dicom = pydicom.dcmread(file)
-        except InvalidDicomError:
-            return jsonify({"error": f"File {file.filename} is not a valid DICOM file"}), 400
-
         unique_filename = get_unique_filename(file.filename)
 
         # Save uploaded DICOM
         dicom_path = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(dicom_path)
+
+        try:
+            # Try to read the file as a DICOM file from the saved path
+            dicom = pydicom.dcmread(dicom_path)
+        except InvalidDicomError:
+            os.remove(dicom_path)
+            return jsonify({"error": f"File {file.filename} is not a valid DICOM file"}), 400
 
         # Get Metadata
         metadata = get_dicom_metadata(dicom)
@@ -112,14 +113,14 @@ def upload_dicom():
         variables = {
             "input": {
                 "file": {
-                    "filePath": results[-1]['dicom_path']
+                    "filePath": results[-1]['filename']
                 },
                 "modality": {
                     "name": results[-1]['Modality']
                 },
                 "series": {
                     "idSeries": results[-1]['SeriesInstanceUID'],
-                    "name": results[-1]['StudyDescription'],
+                    "name": results[-1]['SeriesDescription'],
                     "date": results[-1]['SeriesDate'],
                     "study": {
                         "patient": {
@@ -156,13 +157,13 @@ def upload_dicom():
     return jsonify(results), 200
 
 
-@app.route("/preview/<filename>", methods=["GET"])
+@app.route("/download/<filename>", methods=["GET"])
 def get_preview(filename):
-    """Serves a previously generated PNG preview."""
-    png_path = os.path.join(PREVIEW_FOLDER, filename)
-    if not os.path.exists(png_path):
+    """Serves a Dicom File."""
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    if not os.path.exists(filepath):
         return jsonify({"error": "File not found"}), 404
-    return send_file(png_path, mimetype="image/png")
+    return send_file(filepath, as_attachment=True, mimetype='application/dicom')
 
 
 if __name__ == "__main__":
