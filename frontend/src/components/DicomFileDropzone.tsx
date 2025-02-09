@@ -40,7 +40,7 @@ const DicomFileDropzone: React.FC<DicomFileDropzoneProps> = ({ onUploadSuccess }
                 }
             })
             .then((response) => {
-                setSnackbarMessage('Upload successful' + response.data[0].PatientName);
+                setSnackbarMessage('Upload successful');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
                 setFiles([]);
