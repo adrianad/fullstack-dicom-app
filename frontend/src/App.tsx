@@ -15,7 +15,7 @@ function App() {
     setUpdateDataDisplay((prev) => !prev); // Toggle the state to trigger rerender
   };
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setSelectedTab(newValue);
   };
 
