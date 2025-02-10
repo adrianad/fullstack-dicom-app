@@ -11,9 +11,6 @@ RUN npm install
 # Copy the rest of your application code (including server.mjs)
 COPY . .
 
-# Change Linebreaks to Unix style
-RUN dos2unix /app/wait-for-db.sh
-
 # Expose the port on which your Node server listens (adjust if needed)
 EXPOSE 4000
 

@@ -32,7 +32,8 @@ services:
       - backend
     environment:
       NODE_ENV: production
-    entrypoint: ["/bin/sh", "-c", "/app/wait-for-db.sh && npx sequelize-cli db:migrate && node server.mjs"]
+    entrypoint: ["/bin/sh", "-c", "until nc -z -v -w30 db 3306; do echo 'Waiting for database connection...'; sleep 5; done; echo 'Database is up!'; npx sequelize-cli db:migrate && node server.mjs"]
+
 
 
   frontend:
