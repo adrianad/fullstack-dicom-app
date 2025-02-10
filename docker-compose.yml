@@ -17,8 +17,6 @@ services:
     build:
       context: ./backend/python-api
       dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
     volumes:
       # Map the host's "uploads" directory to the container's "uploads" directory.
       # This ensures that any files uploaded to /app/uploads persist on the host.
@@ -30,8 +28,6 @@ services:
     build:
       context: ./backend/node-api
       dockerfile: Dockerfile
-    ports:
-      - "4000:4000"
     networks:
       - backend
     environment:
