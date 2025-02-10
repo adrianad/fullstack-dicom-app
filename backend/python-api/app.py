@@ -11,9 +11,11 @@ from pydicom.valuerep import PersonName
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app) 
+CORS(app)  # Enable Cross-Origin Resource Sharing
 
+# Define upload folder and GraphQL URL
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 graphql_url = "http://node-api:4000"
@@ -26,6 +28,7 @@ def get_unique_filename(filename):
     return f"{name}_{timestamp}_{unique_id}{ext}"
 
 def get_dicom_value(ds, name):
+    """Extracts and formats DICOM values."""
     value = ds.get(name)
     if value is None:
         return ""
@@ -42,7 +45,7 @@ def get_dicom_value(ds, name):
     return value
 
 def get_dicom_metadata(ds):
-
+    """Extracts metadata from a DICOM dataset."""
     SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
     StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
         
@@ -60,7 +63,6 @@ def get_dicom_metadata(ds):
         "SeriesDescription": get_dicom_value(ds, 'SeriesDescription')
     }
     return metadata
-
 
 @app.route("/upload", methods=["POST"])
 def upload_dicom():
@@ -135,7 +137,6 @@ def upload_dicom():
             }
         }
 
-        
         # Create the payload that includes both the query and variables
         payload = {
             "query": query,
@@ -144,7 +145,6 @@ def upload_dicom():
 
         # Send the POST request
         response = requests.post(graphql_url, json=payload)
-
 
         print("response status code: ", response.status_code) 
         if response.status_code == 200: 
@@ -156,7 +156,6 @@ def upload_dicom():
 
     return jsonify(results), 200
 
-
 @app.route("/download/<filename>", methods=["GET"])
 def get_preview(filename):
     """Serves a Dicom File."""
@@ -164,7 +163,6 @@ def get_preview(filename):
     if not os.path.exists(filepath):
         return jsonify({"error": "File not found"}), 404
     return send_file(filepath, as_attachment=True, mimetype='application/dicom')
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
