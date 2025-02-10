@@ -46,9 +46,15 @@ def get_dicom_value(ds, name):
 
 def get_dicom_metadata(ds):
     """Extracts metadata from a DICOM dataset."""
-    SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
-    StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
+    try:
+        SeriesDate = datetime.strptime(get_dicom_value(ds, 'SeriesDate'), "%Y%m%d").strftime("%m-%d-%Y")
+        StudyDate = datetime.strptime(get_dicom_value(ds, 'StudyDate'), "%Y%m%d").strftime("%m-%d-%Y")
+    except ValueError:
+        today = datetime.now().strftime("%m-%d-%Y")
+        SeriesDate = today
+        StudyDate = today
         
+
     metadata = {
         "PatientName": get_dicom_value(ds, 'PatientName'),
         "PatientBirthDate": get_dicom_value(ds, 'PatientBirthDate'),
