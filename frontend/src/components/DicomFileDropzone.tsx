@@ -4,6 +4,7 @@ import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
 import { Box, Typography, Button, Snackbar, Alert } from '@mui/material';
 
+// Define the props for the DicomFileDropzone component
 interface DicomFileDropzoneProps {
     onUploadSuccess: () => void;
 }
@@ -15,6 +16,7 @@ const DicomFileDropzone: React.FC<DicomFileDropzoneProps> = ({ onUploadSuccess }
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
     const [dropzoneKey, setDropzoneKey] = useState(0); // Add a key state for DropzoneArea
 
+    // Handle files dropped into the dropzone
     const handleDrop = (acceptedFiles: File[]) => {
         const dicomFiles = acceptedFiles.filter((file) => {
             const name = file.name.toLowerCase();
@@ -23,10 +25,12 @@ const DicomFileDropzone: React.FC<DicomFileDropzoneProps> = ({ onUploadSuccess }
         setFiles((prevFiles) => [...prevFiles, ...dicomFiles]);
     };
 
+    // Handle file deletion from the dropzone
     const handleDelete = (file: File) => {
         setFiles((prevFiles) => prevFiles.filter((f) => f !== file));
     };
 
+    // Handle file upload to the server
     const handleUpload = () => {
         const formData = new FormData();
         files.forEach((file) => {
@@ -34,12 +38,12 @@ const DicomFileDropzone: React.FC<DicomFileDropzoneProps> = ({ onUploadSuccess }
         });
 
         axios
-            .post('http://localhost:5000/upload', formData, {
+            .post('/files/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            .then((response) => {
+            .then(() => {
                 setSnackbarMessage('Upload successful');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
@@ -54,6 +58,7 @@ const DicomFileDropzone: React.FC<DicomFileDropzoneProps> = ({ onUploadSuccess }
             });
     };
 
+    // Handle closing the snackbar
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
     };

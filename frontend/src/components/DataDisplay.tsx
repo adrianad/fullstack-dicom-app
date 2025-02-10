@@ -6,6 +6,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import { format } from 'date-fns';
 
+// Define the structure of the FileData interface
 interface FileData {
     idFile: string;
     idSeries: string;
@@ -29,6 +30,7 @@ interface FileData {
     };
 }
 
+// Define styles for the table
 const useStyles = makeStyles({
     table: {
         minWidth: 650,
@@ -41,6 +43,7 @@ const useStyles = makeStyles({
     },
 });
 
+// Define the props for the DataDisplay component
 interface DataDisplayProps {
     updateTrigger: boolean;
     onViewImage: (imageId: string) => void;
@@ -53,12 +56,13 @@ const DataDisplay: React.FC<DataDisplayProps> = ({ updateTrigger, onViewImage })
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+    const [order, setOrder] = useState<'asc' | 'desc'>('desc');
     const [orderBy, setOrderBy] = useState<keyof FileData>('idFile');
 
+    // Fetch data from the server when the component mounts or updateTrigger changes
     useEffect(() => {
         setLoading(true);
-        axios.post('http://localhost:4000/graphql', {
+        axios.post("/graphql/", {
             query: `
                 query Query {
                     getAllFiles {
@@ -85,45 +89,57 @@ const DataDisplay: React.FC<DataDisplayProps> = ({ updateTrigger, onViewImage })
                     }
                 }
             `
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'   // Ensures Apollo allows the request
+            }
         })
-        .then(response => {
-            setFiles(response.data.data.getAllFiles);
-            setLoading(false);
-        })
-        .catch(error => {
-            setError(error.message);
-            setLoading(false);
-        });
+            .then(response => {
+                setFiles(response.data.data.getAllFiles);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error.message);
+                setLoading(false);
+            });
+
     }, [updateTrigger]);
 
+    // Handle sorting of the table columns
     const handleRequestSort = (property: keyof FileData) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    // Handle page change in the table pagination
+    const handleChangePage = (_event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
         setPage(newPage);
     };
 
+    // Handle rows per page change in the table pagination
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setRowsPerPage(parseInt(event.target.value));
         setPage(0);
     };
 
+    // Sort the files based on the selected column and order
     const sortedFiles = files.sort((a, b) => {
         if (orderBy === 'idFile') {
-            return (a.idFile < b.idFile ? -1 : 1) * (order === 'asc' ? 1 : -1);
+            return (parseInt(a.idFile) < parseInt(b.idFile) ? -1 : 1) * (order === 'asc' ? 1 : -1);
         }
         return 0;
     });
 
+    // Paginate the sorted files
     const paginatedFiles = sortedFiles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+    // Display loading message while data is being fetched
     if (loading) {
         return <Typography>Loading...</Typography>;
     }
 
+    // Display error message if there was an error fetching data
     if (error) {
         return <Typography>Error: {error}</Typography>;
     }
@@ -166,7 +182,7 @@ const DataDisplay: React.FC<DataDisplayProps> = ({ updateTrigger, onViewImage })
                                 <TableCell>{file.series.study.patient.birthdate}</TableCell>
                                 <TableCell>{file.series.modality.name}</TableCell>
                                 <TableCell>
-                                    <a href={`http://localhost:5000/download/${file.filePath}`} download>
+                                    <a href={`/files/download/${file.filePath}`} download>
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -179,7 +195,7 @@ const DataDisplay: React.FC<DataDisplayProps> = ({ updateTrigger, onViewImage })
                                     <Button
                                         variant="contained"
                                         color="secondary"
-                                        onClick={() => onViewImage(`wadouri:http://localhost:5000/download/${file.filePath}`)}
+                                        onClick={() => onViewImage(`wadouri:/files/download/${file.filePath}`)}
                                     >
                                         View
                                     </Button>

@@ -3,21 +3,21 @@
     "username": "root",
     "password": "root",
     "database": "dicom_development_db",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": "root",
     "database": "dicom_test_db",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "mysql"
   },
   "production": {
     "username": "dicom_user",
     "password": "dicom_password",
     "database": "dicom_db",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "mysql"
   }
 }
